@@ -1,0 +1,164 @@
+--BOOT--
+
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local Window = Rayfield:CreateWindow({
+   Name = "Mapple V3 | Restraunt Roleplay",
+   LoadingTitle = "Mapple V3",
+   LoadingSubtitle = "Presented by: Mapple",
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil,
+      FileName = "mappleV3rr"
+   },
+   Discord = {
+      Enabled = false,
+      Invite = "KUrmbndxW9",
+      RememberJoins = false 
+   },
+   KeySystem = false, 
+   KeySettings = {
+      Title = "Mapple V3",
+      Subtitle = "Key System",
+      Note = "No method of obtaining the key is provided",
+      FileName = "mappleV3_key",
+      SaveKey = false, 
+      GrabKeyFromSite = false, 
+      Key = {"devM3","DevM3","Devm3"} 
+     }
+})
+
+--spam tab--
+
+local SpamTab = Window:CreateTab("Spam", 4483362458)
+local Section = SpamTab:CreateSection("Order Spam")
+
+local Label = SpamTab:CreateLabel("Must be Trainee +")
+
+_G.orderspam = false
+_G.spamPlr = nil  
+
+local players = game:GetService("Players")
+local playerNames = {}
+
+-- Function to populate player names
+local function updateDropdownOptions()
+    playerNames = {}
+    for _, player in ipairs(players:GetPlayers()) do
+        table.insert(playerNames, player.Name)
+    end
+
+    -- Update the dropdown with the current player names
+    if Dropdown then
+        Dropdown:Set(playerNames)
+    end
+end
+
+-- Initialize player names for the dropdown
+updateDropdownOptions()
+
+-- Create the Dropdown UI element
+local Dropdown = SpamTab:CreateDropdown({
+    Name = "Select Player",
+    Options = playerNames, -- Ensure this is non-empty
+    CurrentOption = playerNames[1] or "", -- Set to the first option or an empty string
+    MultipleOptions = false,
+    Flag = "PlayerDropdownFlag",
+    Callback = function(Option)
+        if Option and Option[1] then
+            _G.spamPlr = Option[1]
+            print("Dropdown selected:", _G.spamPlr)
+        else
+            print("Invalid dropdown selection")
+        end
+    end,
+})
+
+-- Ensure Dropdown has valid options
+if #playerNames == 0 then
+    print("No players found to populate the dropdown.")
+else
+    print("Dropdown created with options:", table.concat(playerNames, ", "))
+end
+
+
+-- Confirm Dropdown and Toggle creation and flag setting
+print("Dropdown created with flag: PlayerDropdownFlag")
+print("Toggle created with flag: SpamToggleFlag")
+
+-- Define the function to spam orders
+local function orderspam()
+    while _G.orderspam do
+        if _G.spamPlr then
+            local player = game:GetService("Players"):FindFirstChild(_G.spamPlr)
+            if player then
+                local args = {
+                    [1] = player,
+                    [2] = "Meat Wrap",
+                    [3] = "Chicken Burger",
+                    [4] = "Meat Wrap"
+                }
+                -- Error handling for SubmitOrder
+                local success, err = pcall(function()
+                    game:GetService("ReplicatedStorage").MainEvents.SubmitOrder:FireServer(unpack(args))
+                end)
+                
+                if not success then
+                    print("Error submitting order:", err)
+                end
+            else
+                print("Player not found:", _G.spamPlr)
+            end
+        else
+            print("Player name is not set.")
+        end
+        wait(0.5) -- Wait time between orders
+    end
+end
+
+-- Function to start spamming orders
+local function startOrderSpam()
+    -- Wrap the orderspam function in a coroutine to allow it to run asynchronously
+    coroutine.wrap(function()
+        local success, err = pcall(orderspam)
+        if not success then
+            print("Error in orderspam coroutine:", err)
+        end
+    end)()
+end
+
+-- Create the Toggle UI element
+local Toggle = SpamTab:CreateToggle({
+    Name = "Spam",
+    CurrentValue = false,
+    Flag = "SpamToggleFlag",
+    Callback = function(Value)
+        _G.orderspam = Value
+        print("Toggle state changed:", Value)
+        if Value then
+            startOrderSpam() -- Start the coroutine if toggled on
+        end
+    end,
+})
+
+-- Confirm Toggle creation and flag setting
+print("Toggle created with flag: SpamToggleFlag")
+
+--utility--
+
+local UtilityTab = Window:CreateTab("Utility", 4483362458)
+local Section = UtilityTab:CreateSection("Utility")
+
+local Button = UtilityTab:CreateButton({
+   Name = "Spawn Jeep",
+   Callback = function()
+   local args = {
+    [1] = "spawn",
+    [2] = {
+        ["car"] = "SUV"
+    }
+}
+
+game:GetService("ReplicatedStorage").MainEvents.Vehicle:FireServer(unpack(args))
+
+   end,
+})
