@@ -6,7 +6,7 @@ local Window = Rayfield:CreateWindow({
    LoadingTitle = "Mapple V3",
    LoadingSubtitle = "Presented by: Mapple",
    ConfigurationSaving = {
-      Enabled = true,
+      Enabled = false,
       FolderName = nil,
       FileName = "mappleV3rr"
    },
